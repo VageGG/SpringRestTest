@@ -1,0 +1,19 @@
+spring.application.name=SpringSecurityTest
+
+# === DataBase === #
+spring.datasource.url=jdbc:mysql://localhost:3306/schema_name_DB?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC
+spring.datasource.username=
+spring.datasource.password=
+
+# === JPA / Hibernate === #
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=true
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+
+# === Thymeleaf === #
+#spring.thymeleaf.enable=true
+
+# === Logging === #
+logging.level.org.springframework=INFO
+logging.level.hibernate=INFO
+logging.level.org.springframework.security=INFO
