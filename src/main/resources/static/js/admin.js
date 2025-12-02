@@ -43,7 +43,7 @@ class AdminApp {
                 <td>${u.name}</td>
                 <td>${u.age}</td>
                 <td>${u.email}</td>
-                <td>${u.roles.join(', ')}</td>
+                <td>${u.roles.map(r => r.replace("ROLE_", "")).join(', ')}</td>
                 <td>
                     <button class="btn btn-sm btn-info edit-btn" data-id="${u.id}">Edit</button>
                     <button class="btn btn-sm btn-danger delete-btn" data-id="${u.id}" data-name="${u.name}">Delete</button>
@@ -124,3 +124,15 @@ class AdminApp {
 }
 
 document.addEventListener('DOMContentLoaded', () => new AdminApp());
+
+async function loadCurrentUser() {
+    const response = await fetch("/api/auth/user");
+    const user = await response.json();
+
+    document.getElementById("current-username").textContent = user.email;
+    document.getElementById("current-roles").textContent = user.roles.map(r => r.replace("ROLE_", "")).join(", ");
+}
+
+// вызываем после загрузки DOM
+document.addEventListener("DOMContentLoaded", loadCurrentUser);
+

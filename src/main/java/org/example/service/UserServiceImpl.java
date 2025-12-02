@@ -60,6 +60,8 @@ public class UserServiceImpl implements UserService {
                         .orElseThrow(() -> new RuntimeException("Role not found: " + rn)))
                 .collect(Collectors.toSet()));
 
+        userRepository.save(user);
+
         return toDto(user);
     }
 

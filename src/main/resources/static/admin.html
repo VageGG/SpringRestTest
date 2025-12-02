@@ -7,28 +7,45 @@
 </head>
 <body class="bg-light">
 
+<!-- Верхняя панель -->
 <nav class="navbar navbar-dark bg-dark px-3">
     <span class="navbar-brand">
-        <span id="current-username">admin@gmail.com</span>
-        &nbsp;with roles: <span id="current-roles"></span>
+        <span id="current-username">admin@gmail.com</span> with roles: <span id="current-roles"></span>
     </span>
-    <button class="btn btn-outline-light" id="logout-btn">Logout</button>
+    <form action="/logout" method="post">
+        <button class="btn btn-outline-light">Logout</button>
+    </form>
 </nav>
 
 <div class="container-fluid">
     <div class="row">
+        <!-- Левое меню -->
         <div class="col-2 px-0 bg-white border-end" style="min-height:100vh;">
             <ul class="nav flex-column mt-3">
                 <li class="nav-item">
-                    <button class="nav-link btn btn-link" id="nav-users">Users</button>
+                    <button class="nav-link btn btn-link" id="nav-users">Admin</button>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-new" href="/user.html">User</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Основная часть -->
+        <div class="col-10" id="main-content">
+            <h2 class="my-4">Admin panel</h2>
+
+            <!-- Вкладки -->
+            <ul class="nav nav-tabs mb-3">
+                <li class="nav-item">
+                    <button class="nav-link active" id="tab-users">Users table</button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link btn btn-link" id="nav-new">New User</button>
                 </li>
             </ul>
-        </div>
-        <div class="col-10" id="main-content">
-            <h2 class="my-4">Admin panel</h2>
+
+            <!-- Таблица пользователей -->
             <div class="card">
                 <div class="card-body">
                     <h5 class="mb-3">All users</h5>
@@ -44,7 +61,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <!-- Users will be injected here by JS -->
+                        <!-- Users injected by JS -->
                         </tbody>
                     </table>
                 </div>
