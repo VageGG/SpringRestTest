@@ -27,7 +27,7 @@ public class AuthController {
     private UserDto toDto(User user) {
         UserDto dto = modelMapper.map(user, UserDto.class);
         dto.setRoles(user.getRoles().stream().map(Role::getName).collect(Collectors.toList()));
-        dto.setPassword(null); // never expose password
+        dto.setPassword(null);
         return dto;
     }
 }

@@ -135,4 +135,3 @@ async function loadCurrentUser() {
 
 // вызываем после загрузки DOM
 document.addEventListener("DOMContentLoaded", loadCurrentUser);
-
