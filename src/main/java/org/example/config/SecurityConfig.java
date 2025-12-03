@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/user").authenticated()
                         .anyRequest().permitAll()
                 )
+                .httpBasic(httpBasic -> {})
                 .formLogin(form -> form
                         .loginPage("/login.html")
                         .permitAll()

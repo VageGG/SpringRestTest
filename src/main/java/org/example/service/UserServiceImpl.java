@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.example.dto.UserDto;
 import org.example.entity.Role;
 import org.example.entity.User;
+import org.example.exception.EmailAlreadyExistsException;
+import org.example.exception.RoleNotFoundException;
 import org.example.exception.UserNotFoundException;
 import org.example.repository.RoleRepository;
 import org.example.repository.UserRepository;
@@ -13,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,26 +41,39 @@ public class UserServiceImpl implements UserService {
 
     public UserDto createUser(UserDto userDto) {
         User user = toEntity(userDto);
+
+        if (existsByEmail(userDto.getEmail()).isPresent()) {
+            throw new EmailAlreadyExistsException("Email already exists " + userDto.getEmail());
+        }
+
         if (userDto.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
+
         return toDto(userRepository.save(user));
     }
 
     public UserDto updateUser(Long id, UserDto userDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
+
         user.setName(userDto.getName());
         user.setAge(userDto.getAge());
+
+        existsByEmail(userDto.getEmail()).ifPresent(existingUser -> {
+            if (!existingUser.getId().equals(id)) {
+                throw new EmailAlreadyExistsException("Email for update already exists: " + userDto.getEmail());
+            }
+        });
+
         user.setEmail(userDto.getEmail());
         if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         }
-        // update roles
         user.getRoles().clear();
         user.getRoles().addAll(userDto.getRoles().stream()
                 .map(rn -> roleRepository.findByName(rn)
-                        .orElseThrow(() -> new RuntimeException("Role not found: " + rn)))
+                        .orElseThrow(() -> new RoleNotFoundException("Role not found: " + rn)))
                 .collect(Collectors.toSet()));
 
         userRepository.save(user);
@@ -86,5 +102,9 @@ public class UserServiceImpl implements UserService {
                     .collect(Collectors.toSet()));
         }
         return user;
+    }
+
+    private Optional<User> existsByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }
