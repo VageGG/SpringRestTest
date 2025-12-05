@@ -76,9 +76,25 @@ class AdminApp {
         `).join('');
     }
 
-    openDeleteModal(id, name) {
-        document.getElementById('delete-user-id').value = id;
-        document.getElementById('delete-username').textContent = name;
+    async openDeleteModal(id, name) {
+        const res = await fetch(`${this.API_BASE}/api/users/${id}`);
+        const user = await res.json();
+
+        document.getElementById('delete-user-id').value = user.id;
+        document.getElementById('delete-name').textContent = user.name;
+        document.getElementById('delete-age').textContent = user.age;
+        document.getElementById('delete-email').textContent = user.email;
+
+        const rolesDiv = document.getElementById('delete-roles');
+        rolesDiv.innerHTML = this.roles.map(r => `
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" 
+                   ${user.roles.includes(r.name) ? 'checked' : ''} 
+                   disabled>
+            <label class="form-check-label">${r.name.replace('ROLE_', '')}</label>
+        </div>
+    `).join('');
+
         this.deleteModal.show();
     }
 

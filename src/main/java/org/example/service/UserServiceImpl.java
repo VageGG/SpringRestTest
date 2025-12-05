@@ -13,6 +13,7 @@ import org.example.repository.UserRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -28,17 +30,18 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
 
     public List<UserDto> getAllUsers() {
-        return userRepository.findAll().stream()
+        return userRepository.findAllWithRoles().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
     public UserDto getUserById(Long id) {
-        User user = userRepository.findById(id)
+        User user = userRepository.findByIdWithRoles(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
         return toDto(user);
     }
 
+    @Transactional
     public UserDto createUser(UserDto userDto) {
         User user = toEntity(userDto);
 
@@ -53,8 +56,9 @@ public class UserServiceImpl implements UserService {
         return toDto(userRepository.save(user));
     }
 
+    @Transactional
     public UserDto updateUser(Long id, UserDto userDto) {
-        User user = userRepository.findById(id)
+        User user = userRepository.findByIdWithRoles(id)
                 .orElseThrow(() -> new UserNotFoundException(id));
 
         user.setName(userDto.getName());
@@ -81,9 +85,10 @@ public class UserServiceImpl implements UserService {
         return toDto(user);
     }
 
+    @Transactional
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) throw new UserNotFoundException(id);
-        userRepository.deleteById(id);
+        int deleted = userRepository.deleteUserByIdCustom(id);
+        if (deleted == 0) throw new UserNotFoundException(id);
     }
 
     private UserDto toDto(User user) {
